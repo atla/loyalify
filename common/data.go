@@ -9,7 +9,7 @@ import (
 type Program struct {
 	ID          string    `json:"id,omitempty"`
 	Name        string    `json:"name,omitempty"`
-	Company     string    `json:"company,omitempty"`
+	Companies   []string  `json:"companies,omitempty"`
 	Token       string    `json:"token,omitempty"`
 	Shop        string    `json:"shop,omitempty"`
 	Description string    `json:"description,omitempty"`
@@ -22,7 +22,11 @@ type Program struct {
 func (p *Program) Print() {
 	fmt.Println("ID: " + p.ID)
 	fmt.Println("Name: " + p.Name)
-	fmt.Println("Company: " + p.Company)
+
+	for _, c := range p.Companies {
+		fmt.Println(c)
+	}
+
 	fmt.Println("Token: " + p.Token)
 	fmt.Println("Shop: " + p.Shop)
 	fmt.Println("Description: " + p.Description)
