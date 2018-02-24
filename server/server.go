@@ -20,42 +20,45 @@ var nextProgramID int64
 
 func init() {
 	programs = append(programs, common.Program{
-		ID:          "1",
-		Name:        "Kaufland Monopoly Campaign",
-		Companies:   []string{"LIDL"},
-		Token:       "KauflandM001",
-		Shop:        "http://1876ab32.ngrok.io/shop_web/",
-		Description: "Collect Kaufland Bonus Points and spend them on fantastic new monopoly games assets",
-		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
-		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
-		EndDate:     time.Date(2018, 3, 1, 0, 0, 0, 0, time.Local),
-		Image:       "http://lorempixel.com/g/400/200/",
+		ID:               "1",
+		Name:             "Kaufland Monopoly Campaign",
+		Companies:        []string{"LIDL"},
+		Token:            "KauflandM001",
+		Shop:             "http://1876ab32.ngrok.io/shop_web/",
+		Description:      "Collect Kaufland Bonus Points and spend them on fantastic new monopoly games assets",
+		Address:          "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
+		StartDate:        time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
+		EndDate:          time.Date(2018, 3, 1, 0, 0, 0, 0, time.Local),
+		Image:            "http://lorempixel.com/g/400/200/",
+		BonusPointsSpent: 0,
 	})
 
 	programs = append(programs, common.Program{
-		ID:          "2",
-		Name:        "LIDL Special",
-		Companies:   []string{"Kaufland"},
-		Token:       "LIDLS001",
-		Shop:        "http://1876ab32.ngrok.io/shop_web/",
-		Description: "Collect LIDL Special points",
-		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
-		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
-		EndDate:     time.Date(2018, 3, 1, 0, 0, 0, 0, time.Local),
-		Image:       "http://lorempixel.com/g/400/200/",
+		ID:               "2",
+		Name:             "LIDL Special",
+		Companies:        []string{"Kaufland"},
+		Token:            "LIDLS001",
+		Shop:             "http://1876ab32.ngrok.io/shop_web/",
+		Description:      "Collect LIDL Special points",
+		Address:          "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
+		StartDate:        time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
+		EndDate:          time.Date(2018, 3, 1, 0, 0, 0, 0, time.Local),
+		Image:            "http://lorempixel.com/g/400/200/",
+		BonusPointsSpent: 0,
 	})
 
 	programs = append(programs, common.Program{
-		ID:          "3",
-		Name:        "Paykek",
-		Companies:   []string{"Kaufland", "REWE", "MediaMarkt", "LIDL", "EDEKA"},
-		Token:       "PKEK001",
-		Shop:        "http://1876ab32.ngrok.io/shop_web/",
-		Description: "Collect Paykek points",
-		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
-		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
-		EndDate:     time.Date(2022, 3, 1, 0, 0, 0, 0, time.Local),
-		Image:       "http://lorempixel.com/g/400/200/",
+		ID:               "3",
+		Name:             "Paykek",
+		Companies:        []string{"Kaufland", "REWE", "MediaMarkt", "LIDL", "EDEKA"},
+		Token:            "PKEK001",
+		Shop:             "http://1876ab32.ngrok.io/shop_web/",
+		Description:      "Collect Paykek points",
+		Address:          "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
+		StartDate:        time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
+		EndDate:          time.Date(2022, 3, 1, 0, 0, 0, 0, time.Local),
+		Image:            "http://lorempixel.com/g/400/200/",
+		BonusPointsSpent: 0,
 	})
 
 	//TODO: Remove seed from code
@@ -136,7 +139,7 @@ func TransactionPlaced(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(placeTransaction)
 
-	for _, program := range programs {
+	for idx, program := range programs {
 		if program.ID == placeTransaction.ProgramID {
 
 			loyalityPointsEarned := placeTransaction.Amount * 0.2
@@ -144,6 +147,8 @@ func TransactionPlaced(w http.ResponseWriter, r *http.Request) {
 
 			//TODO: track transactionid so no two loyality point payouts happen
 			common.PayLoyaltyPoints(placeTransaction.SourceID, programAddresses[0], program.Token, loyalityPointsEarned)
+
+			programs[idx].BonusPointsSpent += int64(loyalityPointsEarned)
 
 			answer := "Created loyality points for program " + program.Name + " points earned: " + formatted + " " + program.Token
 			// crreate loyality points

@@ -11,18 +11,18 @@
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <script type="text/javascript" src="instascan.min.js"></script>
+  <script src="js/instascan.min.js"></script>
 
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
   <!-- Vue.js -->
   <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
-
-
 </head>
 
 <body>
+
+
   <div id="app">
 
 
@@ -39,87 +39,117 @@
     </nav>
 
 
-    <div class="section no-pad-bot" id="index-banner">
-      <div class="container col s4">
-        <br>
-        <br>
-        <div class="row">
-          <ul class="collection with-header">
-            <li class="collection-header">
-              Checkout
-            </li>
+    <div class="section no-pad-bot" id="index-banner" ></div>
+    <div class="container col s4">
+      <br>
+      <br>
+      <div class="row" v-if="!sending">
+        <ul class="collection with-header">
+          <li class="collection-header">
+            Checkout
+          </li>
 
-            <li class="collection-item avatar" v-for="item in items">
-              <i class="material-icons circle {{item.color}}">{{item.type}}</i>
-              <div class="title right">{{item.name}} x {{item.amount}}</div>
-              <br>
-              <div class="title right">{{item.price}} €</div>
-            </li>
-            <li class="collection-item active">
-              Summary
-              <div class="title right">{{sum}} €</div>
+          <li class="collection-item avatar" v-for="item in items">
+            <i class="material-icons circle {{item.color}}">{{item.type}}</i>
+            <div class="title right">{{item.name}} x {{item.amount}}</div>
+            <br>
+            <div class="title right">{{item.price}} €</div>
+          </li>
+          <li class="collection-item active">
+            Summary
+            <div class="title right">{{sum}} €</div>
 
-            </li>
-          </ul>
-        </div>
-        <div class="input-group">
-          <span class="flow-text">{{parseInt(sum/5)}} Bonuspunkte vergeben (Programm: {{token}}) </span>
-          <input v-model="addressid" placeholder="AddressID">
-
-
-          <div class="input-field col s12">
-            <select v-model="token">
-              <option value="1">1 - KauflandM001</option>
-              <option value="2">2 - LIDLS001</option>
-              <option value="3">3 - PKEK001</option>
-            </select>
-            <label>Select Bonus Program</label>
-          </div>
-
-
-
-          <a v-on:click="postTransaction" class="btn-large waves-effect waves-light right">
-            <i class="material-icons left">shopping_basket</i>Checkout</a>
-        </div>
+          </li>
+        </ul>
       </div>
 
-      <br>
-      <br><br><br><br><br><br>
-      <body>
-          <video id="preview"></video>
-          <script type="text/javascript">
-            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-            scanner.addListener('scan', function (content) {
-              console.log(content);
-            });
-            Instascan.Camera.getCameras().then(function (cameras) {
-              if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-              } else {
-                console.error('No cameras found.');
-              }
-            }).catch(function (e) {
-              console.error(e);
-            });
-          </script>
-        </body>
+      <div class="z-depth-3 center" v-if="sending" style="padding:50px;">
+
+        <span class="col s6">
+          <h4>Bonuspunkte werden gut geschrieben...</h4>
+        </span>
+        <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+      
+            <div class="spinner-layer spinner-red">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+      
+            <div class="spinner-layer spinner-yellow">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+      
+            <div class="spinner-layer spinner-green">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+
+      </div>
+
+
+      <div class="input-group" v-if="!sending">
+        <span class="flow-text">{{parseInt(sum/5)}} Bonuspunkte vergeben (Programm: {{token}}) </span>
+        <input v-model="addressid" placeholder="AddressID">
+        <div class="input-field col s12">
+          <select v-model="token">
+            <option value="1">1 - KauflandM001</option>
+            <option value="2">2 - LIDLS001</option>
+            <option value="3">3 - PKEK001</option>
+          </select>
+          <label>Select Bonus Program</label>
+        </div>
+        <a v-on:click="postTransaction" class="btn-large waves-effect waves-light right">
+          <i class="material-icons left">shopping_basket</i>Checkout</a>
+      </div>
+
 
     </div>
+
+    <video id="preview"></video>
+
+
   </div>
+  </div>
+
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="js/materialize.js"></script>
   <script src="js/init.js"></script>
-
-
   <script>
     new Vue({
       el: 'body',
       data: {
         items: [],
         sum: 0.0,
-        addressid: "GDTIK7OHFGODC2BO2437GDQHV4XZTQTYOB4C5MXAXLOTVOSHC7KYTMOH",
-        token: "1"
+        addressid: "",
+        token: "1",
+        sending: false
 
       },
       ready: function () {
@@ -133,6 +163,29 @@
           });
           $(this).get(0).dispatchEvent(event);
         });
+
+        let that = this;
+
+        let scanner = new Instascan.Scanner({
+          video: document.getElementById('preview')
+        });
+        scanner.addListener('scan', function (content) {
+          that.addressid = content;
+        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+          if (cameras.length > 0) {
+            scanner.start(cameras[0]);
+          } else {
+            console.error('No cameras found.');
+          }
+        }).catch(function (e) {
+          console.error(e);
+        });
+
+        document.getElementById('preview').hidden = true;
+
+
+
       },
       // This is run whenever the page is loaded to make sure we have a current task list
       created: function () {
@@ -143,7 +196,7 @@
       methods: {
 
         createItem: function () {
-          var names = ["Wasser", "Trauben", "Bananen", "Brot", "Milch", "Schnitzel", "Salat", "Aepfel",
+          var names = ["Wasser", "Trauben", "Bananen", "Brot", "Milch", "Schnitzel", "Salat", "Apfel",
             "Red Bull",
             "Kuchen"
           ]
@@ -189,9 +242,15 @@
             "transaction": "1337"
           }
 
+          this.sending = true;
+
           this.$http.post('/api/transactionPlaced', placetransActionRequest).success(function (response) {
 
             console.log("Got response " + response)
+
+            Materialize.toast(response, 5000, 'rounded')
+            this.sending = false;
+
 
           }).error(function (error) {
             console.log(error)

@@ -7,16 +7,17 @@ import (
 
 // Program holds information about bonus point programs
 type Program struct {
-	ID          string    `json:"id,omitempty"`
-	Name        string    `json:"name,omitempty"`
-	Companies   []string  `json:"companies,omitempty"`
-	Token       string    `json:"token,omitempty"`
-	Shop        string    `json:"shop,omitempty"`
-	Description string    `json:"description,omitempty"`
-	Address     string    `json:"address,omitempty"`
-	StartDate   time.Time `json:"startdate,omitempty"`
-	EndDate     time.Time `json:"enddate,omitempty"`
-	Image       string    `json:"image,omitempty"`
+	ID               string    `json:"id,omitempty"`
+	Name             string    `json:"name,omitempty"`
+	Companies        []string  `json:"companies,omitempty"`
+	Token            string    `json:"token,omitempty"`
+	Shop             string    `json:"shop,omitempty"`
+	Description      string    `json:"description,omitempty"`
+	Address          string    `json:"address,omitempty"`
+	StartDate        time.Time `json:"startdate,omitempty"`
+	EndDate          time.Time `json:"enddate,omitempty"`
+	Image            string    `json:"image,omitempty"`
+	BonusPointsSpent int64     `json:"bonuspointsspent"`
 }
 
 // Print prints the program

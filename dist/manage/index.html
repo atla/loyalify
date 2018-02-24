@@ -42,7 +42,7 @@
                 <div v-for="program in programs">
                     <div>
                         <div class="col s6">
-                            <div class="card big" style="height: 350px">
+                            <div class="card big" style="height: 400px">
                                 <div class="card-image">
                                     <img src="https://picsum.photos/300/70">
                                     <span class="card-title">
@@ -66,6 +66,7 @@
                                 </div>
                                 <div class="card-action">
                                     <a href='{{program.shop}}'>Webshop</a>
+                                    <a href='#'>Punkte Insgesamt: {{program.bonuspointsspent}}</a>
                                 </div>
                             </div>
                         </div>
