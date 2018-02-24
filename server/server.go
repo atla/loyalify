@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"loyalify/common"
+	"math"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -66,8 +68,15 @@ func init() {
 }
 
 func getNewID() string {
-	nextProgramID++
-	return string(nextProgramID)
+
+	max := 0.0
+	for _, program := range programs {
+
+		current, _ := strconv.Atoi(program.ID)
+		max = math.Max(float64(max), float64(current))
+	}
+
+	return strconv.Itoa(int(max + 1))
 }
 
 func getRandomCompanyName() string {
