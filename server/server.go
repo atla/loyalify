@@ -21,10 +21,11 @@ func init() {
 		Companies:   []string{"LIDL"},
 		Token:       "KauflandM001",
 		Shop:        "http://tothemoon.shop",
-		Description: "Collect Kaufland BOnus Points and spend them on fantastic new monopoly games assets",
+		Description: "Collect Kaufland Bonus Points and spend them on fantastic new monopoly games assets",
 		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
 		EndDate:     time.Date(2018, 3, 1, 0, 0, 0, 0, time.Local),
+		Image:       "http://lorempixel.com/g/400/200/",
 	})
 
 	programs = append(programs, common.Program{
@@ -37,6 +38,7 @@ func init() {
 		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
 		EndDate:     time.Date(2018, 3, 1, 0, 0, 0, 0, time.Local),
+		Image:       "http://lorempixel.com/g/400/200/",
 	})
 
 	programs = append(programs, common.Program{
@@ -49,6 +51,7 @@ func init() {
 		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
 		EndDate:     time.Date(2022, 3, 1, 0, 0, 0, 0, time.Local),
+		Image:       "http://lorempixel.com/g/400/200/",
 	})
 
 	//TODO: Remove seed from code
@@ -56,6 +59,25 @@ func init() {
 		Seed:    "",
 		Address: "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 	})
+}
+
+func getNewID() string {
+
+	return "23"
+
+}
+
+// CreateProgram asd
+func CreateProgram(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("Creating new Program")
+	var program common.Program
+	_ = json.NewDecoder(r.Body).Decode(&program)
+	program.ID = getNewID()
+	program.Address = programAddresses[0].Address
+	program.Companies = []string{"ACME"}
+	programs = append(programs, program)
+	json.NewEncoder(w).Encode(programs)
 }
 
 // GetPrograms returns the list of programs
@@ -129,10 +151,14 @@ func StartServer() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/programs", GetPrograms).Methods("GET")
 	router.HandleFunc("/api/programs/{id}", GetProgram).Methods("GET")
+	router.HandleFunc("/api/programs", CreateProgram).Methods("POST")
+
 	router.HandleFunc("/api/createAccount/{id}", CreateAccount).Methods("GET")
 	router.HandleFunc("/api/transactionPlaced", TransactionPlaced).Methods("POST")
 
-	//router.HandleFunc("/programs/{id}", CreatePerson).Methods("POST")
+	router.PathPrefix("/counter").Handler(http.FileServer(http.Dir("dist/")))
+	router.PathPrefix("/manage").Handler(http.FileServer(http.Dir("dist/")))
+
 	//router.HandleFunc("/programs/{id}", DeletePerson).Methods("DELETE")
 	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
 }

@@ -1,0 +1,134 @@
+<!-- public/index.html -->
+
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <title>Manage Loyalify Programs</title>
+
+    <!-- JQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <!-- Vue.js -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
+</head>
+
+<body>
+
+    <div id="app">
+        <nav>
+            <div class="nav-wrapper">
+                <a href="#" style="padding-left:20px;" class="brand-logo">
+                    <b>Manage Loyalify Programs</b>
+                </a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li>
+                        <a>About</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+
+        <div class="container" style="padding-top:50px;">
+
+            <div class="row">
+                <div class="col-md-4"></div>
+
+                <div v-for="program in programs">
+                    <div class="row">
+                        <div class="col s12 m7">
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="https://picsum.photos/300/70">
+                                    <span class="card-title">
+                                        <b>{{program.name}}</b>
+                                    </span>
+                                </div>
+                                <div class="card-content">
+                                    <p>{{program.description}}</p>
+                                </div>
+                                <div class="card-action">
+                                    <a href='{{program.shop}}'>Webshop</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <h3>Create a new Loyalify Program</h3>
+                <div class="input-group">
+
+                    <input v-model="newProgram.name" placeholder="Name">
+                    <input v-model="newProgram.description" placeholder="Description">
+                    <input v-model="newProgram.token" placeholder="Token">
+
+                    <input v-model="newProgram.shop" placeholder="Shop">
+                    
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button" v-on:click="createProgram">Create Program</button>
+                    </span>
+                </div>
+                <!-- /input-group -->
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <script>
+        new Vue({
+            el: 'body',
+            data: {
+                programs: [],
+                newProgram: {
+                    name: "",
+                    description: "",
+                    token: ""
+                },
+                showModal: false
+
+            },
+
+            // This is run whenever the page is loaded to make sure we have a current task list
+            created: function () {
+                // Use the vue-resource $http client to fetch data from the /tasks route
+                this.$http.get('/api/programs').then(function (response) {
+                    this.programs = response.data ? response.data : []
+                })
+            },
+         
+            methods: {
+                createProgram: function () {
+
+
+
+                    if (!$.trim(this.newProgram.name)) {
+                        this.newProgram = {}
+                        return
+                    }
+
+                    // Post the new task to the /tasks route using the $http client
+                    this.$http.put('/api/programs', this.newProgram).success(function (response) {
+                        this.newProgram.id = response.created
+                        this.programs.push(this.newProgram)
+                        console.log("Task created!")
+                        console.log(this.newProgram)
+                        this.newTask = {}
+                    }).error(function (error) {
+                        console.log(error)
+                    });
+
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -16,6 +16,7 @@ type Program struct {
 	Address     string    `json:"address,omitempty"`
 	StartDate   time.Time `json:"startdate,omitempty"`
 	EndDate     time.Time `json:"enddate,omitempty"`
+	Image       string    `json:"image,omitempty"`
 }
 
 // Print prints the program
