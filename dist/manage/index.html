@@ -38,20 +38,31 @@
         <div class="container" style="padding-top:50px;">
 
             <div class="row">
-                <div class="col-md-4"></div>
 
                 <div v-for="program in programs">
-                    <div class="row">
-                        <div class="col s12 m7">
-                            <div class="card">
+                    <div>
+                        <div class="col s6">
+                            <div class="card big" style="height: 350px">
                                 <div class="card-image">
                                     <img src="https://picsum.photos/300/70">
                                     <span class="card-title">
                                         <b>{{program.name}}</b>
+
+
+
                                     </span>
                                 </div>
                                 <div class="card-content">
                                     <p>{{program.description}}</p>
+                                    <br>
+                                    <p>Teilnehmer:
+                                        <b>{{program.companyFormatted}}</b>
+                                    </p>
+                                    <p>Sammelpunkte:
+                                        <b>{{program.token}}</b>
+                                    </p>
+                                    <p>Aktionszeitraum: von {{program.startdate}} bis {{program.enddate}}
+                                    </p>
                                 </div>
                                 <div class="card-action">
                                     <a href='{{program.shop}}'>Webshop</a>
@@ -62,25 +73,30 @@
                 </div>
 
 
-                <h3>Create a new Loyalify Program</h3>
-                <div class="input-group">
 
-                    <input v-model="newProgram.name" placeholder="Name">
-                    <input v-model="newProgram.description" placeholder="Description">
-                    <input v-model="newProgram.token" placeholder="Token">
+                <div class="col s12">
 
-                    <input v-model="newProgram.shop" placeholder="Shop">
-                    
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button" v-on:click="createProgram">Create Program</button>
-                    </span>
+                    <h3>Create a new Loyalify Program</h3>
+
+                    <div class="input-group">
+
+                        <input v-model="newProgram.name" placeholder="Name">
+                        <input v-model="newProgram.description" placeholder="Description">
+                        <input v-model="newProgram.token" placeholder="Token">
+
+                        <input v-model="newProgram.shop" placeholder="Shop">
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" v-on:click="createProgram">Create Program</button>
+                        </span>
+                    </div>
+                    <!-- /input-group -->
                 </div>
-                <!-- /input-group -->
             </div>
+
         </div>
     </div>
     </div>
-
 
     <script>
         new Vue({
@@ -101,10 +117,20 @@
                 // Use the vue-resource $http client to fetch data from the /tasks route
                 this.$http.get('/api/programs').then(function (response) {
                     this.programs = response.data ? response.data : []
+
+                    this.programs.forEach(element => {
+                        let formattedCompanies = "";
+                        element.companies.forEach(comp => formattedCompanies += comp + ', ')
+                        element.companyFormatted = formattedCompanies.substring(0,
+                            formattedCompanies.length - 2)
+                    });
+
                 })
             },
-         
+
             methods: {
+
+
                 createProgram: function () {
 
 
@@ -115,12 +141,10 @@
                     }
 
                     // Post the new task to the /tasks route using the $http client
-                    this.$http.put('/api/programs', this.newProgram).success(function (response) {
+                    this.$http.post('/api/programs', this.newProgram).success(function (response) {
                         this.newProgram.id = response.created
                         this.programs.push(this.newProgram)
-                        console.log("Task created!")
-                        console.log(this.newProgram)
-                        this.newTask = {}
+                        this.newProgram = {}
                     }).error(function (error) {
                         console.log(error)
                     });

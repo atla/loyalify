@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"loyalify/common"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 
 var programs []common.Program
 var programAddresses []common.StellarAddress
+var nextProgramID int64
 
 func init() {
 	programs = append(programs, common.Program{
@@ -20,7 +22,7 @@ func init() {
 		Name:        "Kaufland Monopoly Campaign",
 		Companies:   []string{"LIDL"},
 		Token:       "KauflandM001",
-		Shop:        "http://tothemoon.shop",
+		Shop:        "http://1876ab32.ngrok.io/shop_web/",
 		Description: "Collect Kaufland Bonus Points and spend them on fantastic new monopoly games assets",
 		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
@@ -33,7 +35,7 @@ func init() {
 		Name:        "LIDL Special",
 		Companies:   []string{"Kaufland"},
 		Token:       "LIDLS001",
-		Shop:        "http://tothemoon.shop",
+		Shop:        "http://1876ab32.ngrok.io/shop_web/",
 		Description: "Collect LIDL Special points",
 		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
@@ -46,7 +48,7 @@ func init() {
 		Name:        "Paykek",
 		Companies:   []string{"Kaufland", "REWE", "MediaMarkt", "LIDL", "EDEKA"},
 		Token:       "PKEK001",
-		Shop:        "http://tothemoon.shop",
+		Shop:        "http://1876ab32.ngrok.io/shop_web/",
 		Description: "Collect Paykek points",
 		Address:     "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 		StartDate:   time.Date(2018, 1, 1, 0, 0, 0, 0, time.Local),
@@ -59,12 +61,20 @@ func init() {
 		Seed:    "",
 		Address: "GC7JELXPLI6OLYUKAOAKCTNDWY75WTUUYCKJO4SG4CH3762FICMOVHQK",
 	})
+
+	nextProgramID = 3
 }
 
 func getNewID() string {
+	nextProgramID++
+	return string(nextProgramID)
+}
 
-	return "23"
-
+func getRandomCompanyName() string {
+	companies := []string{"LIDL", "Kaufland", "Edeka", "REWE"}
+	max := len(companies)
+	index := rand.Int31n(int32(max))
+	return companies[index]
 }
 
 // CreateProgram asd
@@ -75,7 +85,7 @@ func CreateProgram(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&program)
 	program.ID = getNewID()
 	program.Address = programAddresses[0].Address
-	program.Companies = []string{"ACME"}
+	program.Companies = []string{getRandomCompanyName()}
 	programs = append(programs, program)
 	json.NewEncoder(w).Encode(programs)
 }
@@ -114,6 +124,8 @@ func TransactionPlaced(w http.ResponseWriter, r *http.Request) {
 
 	var placeTransaction PlaceTransaction
 	_ = json.NewDecoder(r.Body).Decode(&placeTransaction)
+
+	fmt.Println(placeTransaction)
 
 	for _, program := range programs {
 		if program.ID == placeTransaction.ProgramID {

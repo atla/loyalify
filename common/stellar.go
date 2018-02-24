@@ -103,6 +103,9 @@ func floatToString(input float64) string {
 // PayLoyaltyPoints pays loyalty points to a user id
 func PayLoyaltyPoints(destination string, source StellarAddress, token string, amount float64) {
 
+	log.Printf("PayLoyalityPoints destination: %s source: %s token: %s amount: %f", destination, source.Address, token, amount)
+	log.Println("")
+
 	tx, err := b.Transaction(
 		b.SourceAccount{AddressOrSeed: source.Address},
 		b.TestNetwork,

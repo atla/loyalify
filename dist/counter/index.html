@@ -2,97 +2,174 @@
 <html lang="en">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
-  <title>Starter Template - Materialize</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-  <!-- CSS  -->
+  <title>Loyalify Checkout</title>
+
+  <!-- JQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
-  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
 
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <!-- Vue.js -->
   <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
 </head>
 
 <body>
-  <nav class="light-blue lighten-1" role="navigation">
-    <div class="nav-wrapper container">
-      <a id="logo-container" href="#" class="brand-logo">Loyalify Checkout</a>
-    </div>
-  </nav>
-  <div class="section no-pad-bot" id="index-banner">
-    <div class="container">
-      <br>
-      <br>
-      <h1 class="header left orange-text">Checkout</h1>
-      <div class="row center">
+  <div id="app">
 
-        <ul class="list-group">
-          <li class="list-group-item" v-for="item in items">
-            {{ items.name }}
+
+
+    <nav class="light-blue lighten-1" role="navigation">
+      <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo left">Loyalify Checkout</a>
+        <ul id="nav-mobile" class="right">
+          <li>
+            <a v-on:click.once="newBasket">New Basket</a>
           </li>
         </ul>
+      </div>
+    </nav>
 
 
+    <div class="section no-pad-bot" id="index-banner">
+      <div class="container col s4">
+        <br>
+        <br>
+        <div class="row">
+          <ul class="collection with-header">
+            <li class="collection-header">
+              Checkout
+            </li>
+
+            <li class="collection-item avatar" v-for="item in items">
+              <i class="material-icons circle {{item.color}}">{{item.type}}</i>
+              <div class="title right">{{item.name}} x {{item.amount}}</div>
+              <br>
+              <div class="title right">{{item.price}} €</div>
+            </li>
+            <li class="collection-item active">
+              Summary
+              <div class="title right">{{sum}} €</div>
+
+            </li>
+          </ul>
+        </div>
+        <div class="input-group">
+          <span class="flow-text">{{parseInt(sum/5)}} Bonuspunkte vergeben (Programm: {{token}}) </span>
+          <input v-model="addressid" placeholder="AddressID">
+
+
+          <div class="input-field col s12">
+            <select v-model="token">
+              <option value="1">1 - KauflandM001</option>
+              <option value="2">2 - LIDLS001</option>
+              <option value="3">3 - PKEK001</option>
+            </select>
+            <label>Select Bonus Program</label>
+          </div>
+
+
+
+          <a v-on:click="postTransaction" class="btn-large waves-effect waves-light right">
+            <i class="material-icons left">shopping_basket</i>Checkout</a>
+        </div>
       </div>
-      <div class="row center">
-        <a href="http://materializecss.com/getting-started.html" id="download-button" class="btn-large waves-effect waves-light orange">Checkout</a>
-      </div>
-      <br>
-      <br>
+
 
     </div>
   </div>
-
-
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="js/materialize.js"></script>
   <script src="js/init.js"></script>
 
 
-
   <script>
     new Vue({
       el: 'body',
       data: {
-        items = [{
-          "name": "bananas",
-          "amount": 2.0,
-          "price": 1.5
-        }]
-      },
+        items: [],
+        sum: 0.0,
+        addressid: "GDTIK7OHFGODC2BO2437GDQHV4XZTQTYOB4C5MXAXLOTVOSHC7KYTMOH",
+        token: "1"
 
+      },
+      ready: function () {
+
+        $('select').material_select();
+        $('select').on('change', function () {
+
+          var event = new CustomEvent('change', {
+            detail: 'change',
+            bubbles: true
+          });
+          $(this).get(0).dispatchEvent(event);
+        });
+      },
       // This is run whenever the page is loaded to make sure we have a current task list
       created: function () {
-        // Use the vue-resource $http client to fetch data from the /tasks route
 
-
-
-        items = [{
-          "name": "bananas",
-          "amount": 2.0,
-          "price": 1.5
-        }]
-
-
+        this.newBasket();
       },
 
       methods: {
-        createTask: function () {
-          if (!$.trim(this.newTask.name)) {
-            this.newTask = {}
-            return
+
+        createItem: function () {
+          var names = ["Wasser", "Trauben", "Bananen", "Brot", "Milch", "Schnitzel", "Salat", "Aepfel",
+            "Red Bull",
+            "Kuchen"
+          ]
+          var types = ["assistant", "av_timer", "audiotrack", "blur_on", "brightness_7", "bug_report",
+            "bubble_chart", "donut_large", "favorite", "cake"
+          ]
+          var colors = ["red", "green", "blue", "yellow"]
+          var amount = 1.0 + Math.random() * 13.0;
+          var index = parseInt(Math.random() * names.length)
+          var colorIndex = parseInt(Math.random() * colors.length)
+
+          return {
+            name: names[index],
+            amount: amount.toFixed(2),
+            price: parseInt((1.0 + Math.random() * 2.0) * amount.toFixed(2)),
+            type: types[index],
+            color: colors[colorIndex]
+          }
+        },
+        newBasket: function () {
+          console.dir("Creating new Basket")
+          const itemCount = 3 + Math.floor(Math.random() * 5); // returns a number between 0 and 10      
+          this.items = [];
+
+          for (i = 0; i < itemCount; i++) {
+            this.items.push(this.createItem())
           }
 
-          // Post the new task to the /tasks route using the $http client
-          this.$http.put('/programs', this.newTask).success(function (response) {
-            this.newTask.id = response.created
-            this.tasks.push(this.newTask)
-            console.log("Task created!")
-            console.log(this.newTask)
-            this.newTask = {}
+          this.sum = 0.0;
+          this.items.forEach(element => {
+            this.sum += element.price
+          });
+
+        },
+
+        postTransaction: function () {
+
+          let placetransActionRequest = {
+            "source": this.addressid,
+            "program": this.token,
+            "amount": parseFloat(this.sum),
+            "currency": "EUR",
+            "transaction": "1337"
+          }
+
+          this.$http.post('/api/transactionPlaced', placetransActionRequest).success(function (response) {
+
+            console.log("Got response " + response)
+
           }).error(function (error) {
             console.log(error)
           });
@@ -100,7 +177,6 @@
       }
     })
   </script>
-
 </body>
 
 </html>
